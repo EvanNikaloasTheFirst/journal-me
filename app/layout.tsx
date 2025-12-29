@@ -2,10 +2,18 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
 
+
+
 export const metadata: Metadata = {
   title: "LifeOS",
   description: "A messy, honest notebook for habits, goals, and reflection",
+  icons: {
+    icon: "/icon.png",          // standard favicon
+    shortcut:  "/icon.png",    // legacy support
+    apple: "/icon.png",         // iOS home screen
+  },
 };
+
 
 export default function RootLayout({
   children,
@@ -26,9 +34,10 @@ export default function RootLayout({
           
               {children}
             </main>
+                    <p className=" text-[12px] text-center">Created By: <a href="https://www.instagram.com/ev.codes">@ev.codes</a></p>
+
           </div>
         </Providers>
-        <p className=" text-[12px] text-center">Created By: <a href="https://www.instagram.com/ev.codes">@ev.codes</a></p>
       </body>
     </html>
   );

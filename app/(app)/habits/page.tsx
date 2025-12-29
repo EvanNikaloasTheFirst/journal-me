@@ -100,6 +100,7 @@ async function onToggle(habitId: string, date: string) {
           rounded-md
           shadow-[3px_4px_0px_rgba(0,0,0,0.15)]
           p-5
+          mb-10
 
         "
       >

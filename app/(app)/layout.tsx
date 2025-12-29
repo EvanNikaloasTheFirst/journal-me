@@ -1,3 +1,5 @@
+
+
 export default function AppLayout({
   children,
 }: {
@@ -12,8 +14,7 @@ export default function AppLayout({
         font-handwriting
         text-[12px]
         tracking-wide
-        px-4
-        py-8
+      
       "
     >
       <main
