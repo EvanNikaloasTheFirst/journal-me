@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
-
+import { FeatureCard } from "@/app/components/Help/FeatureCard";
+import { FeatureDetailPane } from "@/app/components/Help/FeatureDetailPane";
 import { Habit } from "../../components/Models/Habit";
 import { fetchHabits } from "@/lib/habits/habit";
 import {
@@ -10,7 +11,7 @@ import {
 import { getCurrentWeekDates } from "@/lib/HabitCompletion/getCurrentWeekDates";
 import { buildCompletionMap } from "@/lib/HabitCompletion/buildCompletionMap";
 import { useSession } from "next-auth/react";
-
+import { ActiveFeature } from "@/app/components/DailyPage/DailyPage";
 import HabitTracker from "../../components/Habits/HabitTracker";
 import PageDivider from "../../components/HelperComponents/PageDivider";
 import BookmarkBlock from "../../components/Bookmark/BookmarkBlock";
@@ -20,6 +21,7 @@ import { CompletionMap } from "@/app/components/Models/CompletionMap";
 export default function HabitPage() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completionMap, setCompletionMap] = useState<CompletionMap>({});
+  const [activeFeature, setActiveFeature] = useState<ActiveFeature | null>(null);
 
   const { status } = useSession();
   const dates = getCurrentWeekDates();
@@ -92,6 +94,25 @@ async function onToggle(habitId: string, date: string) {
       </main>
 
       <PageDivider />
+       <FeatureCard
+  title="Manage Your Habits"
+  imageUrl="/managehabits.png"
+  onOpen={(data) =>
+    setActiveFeature({
+      title: data.title,
+      description:
+        "Define what you’re working toward and shape the habits that support it.",
+      imageUrl: data.imageUrl,
+      points: [
+        "Set a clear intention for what you want to move forward",
+        "Create habits that align with that goal",
+        "Keep active habits visible and focused",
+        "Archive habits without losing their history",
+        "Delete habits that no longer matter",
+      ],
+    })
+  }
+/>
 
       <section
         className="
@@ -104,12 +125,30 @@ async function onToggle(habitId: string, date: string) {
 
         "
       >
-        <h2 className="font-handwriting text-[16px] mb-3 border-b border-black/20 pb-1">
+
+        <div>
+<h2 className="font-handwriting text-[16px] mb-3 border-b border-black/20 pb-1">
           Manage Habits
         </h2>
 
+ 
+
+        </div>
+        
+        
+{activeFeature && (
+  <FeatureDetailPane
+    title={activeFeature.title}
+    description={activeFeature.description}
+    imageUrl={activeFeature.imageUrl}
+    points={activeFeature.points}
+    onClose={() => setActiveFeature(null)}
+  />
+)}
+
         <GoalFlow />
       </section>
+      
     </div>
   );
 }

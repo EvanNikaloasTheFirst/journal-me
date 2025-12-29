@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
+import ThemeToggle from "./components/UserInterface/DarkModeToggle";
 
 
 
@@ -25,16 +26,21 @@ export default function RootLayout({
       <body
 
       >
+
+
         {/* ✅ NextAuth Provider */}
         <Providers>
           <div className="px-4 py-8">
             <main
             
             >
-          
+{/* <div className="relative ">
+  <ThemeToggle />
+</div> */}
+
               {children}
             </main>
-                    <p className=" text-[12px] text-center">Created By: <a href="https://www.instagram.com/ev.codes">@ev.codes</a></p>
+                    <p className=" text-white text-[12px] text-center">Created By: <a href="https://www.instagram.com/ev.codes">@ev.codes</a></p>
 
           </div>
         </Providers>

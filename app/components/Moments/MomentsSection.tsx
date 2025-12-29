@@ -1,14 +1,39 @@
 "use client";
 import MomentItem from "./MomentItem";
 import AddMomentModal from "./AddMomentModal";
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { Moment } from "../Models/Moment";
 import { createMoment } from "@/lib/Moments/moment";
 import { deleteMoment } from "@/lib/Moments/moment";
+import { fetchMoments } from "@/lib/Moments/moment";
 export default function MomentsSection() {
 const [moments, setMoments] = useState<Moment[]>([]);
+const now = new Date();
+const currentYear = now.getFullYear();
+const currentMonth = now.getMonth(); // 0-based (matches DB)
 
 const [open, setOpen] = useState(false);
+
+useEffect(() => {
+  async function loadMoments() {
+    try {
+      const allMoments = await fetchMoments();
+
+      const filtered = allMoments.filter(
+        (m) =>
+          m.year === currentYear &&
+          m.month === currentMonth
+      );
+
+      setMoments(filtered);
+    } catch (err) {
+      console.error("Failed to load moments", err);
+    }
+  }
+
+  loadMoments();
+}, []);
+
 const monthLabel =
   moments[0]
     ? new Date(moments[0].year, moments[0].month).toLocaleString(
@@ -20,7 +45,7 @@ const monthLabel =
 
   return (
     <>
-    <div className="p-3 w-full h-[230px] flex flex-col">
+    <div className="p-3 w-full h-[290px] flex flex-col">
   {/* Header */}
   <div className="flex flex-col gap-2 mb-3 shrink-0">
     <h2 className="text-[22px] font-handwriting">

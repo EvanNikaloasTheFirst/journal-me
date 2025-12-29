@@ -39,7 +39,7 @@ export default function JournalList({ entries, onDelete, onOpen }: Props) {
 
 
   return (
-    <div className="border border-black/30 rounded-sm p-2 space-y-3  mt-5 border border-black/30
+    <div className="rounded-sm p-2 space-y-3  mt-5 border border-black/30
           rounded-md
           shadow-[3px_4px_0px_rgba(0,0,0,0.15)]">
       <h3 className="font-handwriting text-[13px]">
@@ -61,7 +61,7 @@ export default function JournalList({ entries, onDelete, onOpen }: Props) {
             key={year}
             open={year === currentYear}
             className="
-              border border-black/20 rounded-sm p-2
+               rounded-sm p-2
               bg-[linear-gradient(to_bottom,rgba(0,0,0,0.04)_1px,transparent_1px)]
               bg-[size:100%_24px]
             "

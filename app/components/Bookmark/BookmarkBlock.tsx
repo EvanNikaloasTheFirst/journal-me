@@ -17,7 +17,7 @@ export default function BookmarkBlock() {
           <Bookmark label="Habits" path="habits" />
           <Bookmark label="Goals" path="goals" color="bg-pink-300" />
           <Bookmark label="Journal" path="journal" color="bg-yellow-200" />
-          {/* <Bookmark label="Settings" path="setting" color="bg-yellow-200" /> */}
+          {/* <Bookmark label="ToDos" path="todos" color="bg-orange-200" /> */}
         </div>
 
         {/* User */}

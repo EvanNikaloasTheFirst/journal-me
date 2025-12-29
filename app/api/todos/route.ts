@@ -37,16 +37,27 @@ export async function POST(req: Request) {
 }
 
 /* ================= READ ================= */
-export async function GET() {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { searchParams } = new URL(req.url);
+  const all = searchParams.get("all") === "true";
+
   const collection = await getCollection("todos");
 
+  const query: any = { userId: session.user.email };
+
+  // 🔮 future-proof: only apply date filter if NOT loading all
+  if (!all) {
+    // example if you later add daily todos
+    // query.date = today;
+  }
+
   const todos = await collection
-    .find({ userId: session.user.email })
+    .find(query)
     .sort({ createdAt: -1 })
     .toArray();
 

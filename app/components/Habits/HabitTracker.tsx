@@ -19,7 +19,7 @@ export default function HabitTracker({
   if (!habits || habits.length === 0) {
     return (
       <div className="p-6 text-[12px] opacity-60">
-        No actions selected yet
+        <a href="/habits">Let's set up some goals</a>
       </div>
     );
   }

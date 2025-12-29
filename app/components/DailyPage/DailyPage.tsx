@@ -11,17 +11,29 @@ import { Habit } from "@/app/components/Models/Habit";
 import { fetchYearlyGoals } from "@/lib/yearly-goals/yearly-goal";
 import YearBlock from "../Goals/YearBlock";
 import { fetchHabits } from "@/lib/habits/habit";
-import {
-  fetchHabitCompletions,
-  toggleHabitCompletion,
-} from "@/lib/HabitCompletion/habitcompletion";
+import {fetchHabitCompletions,toggleHabitCompletion,} from "@/lib/HabitCompletion/habitcompletion";
+
 import { getCurrentWeekDates } from "@/lib/HabitCompletion/getCurrentWeekDates";
 import { buildCompletionMap } from "@/lib/HabitCompletion/buildCompletionMap";
 import { CompletionMap } from "../Models/CompletionMap";
+import { FeatureCard } from "../Help/FeatureCard";
+import { FeatureDetailPane } from "../Help/FeatureDetailPane";
+
+
+export type ActiveFeature = {
+  title: string;
+  description: string;
+  points?: string[]
+  imageUrl?: string;
+};
+
 export default function DailyPage() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completionMap, setCompletionMap] = useState<CompletionMap>({});
   const { status } = useSession();
+    const [open, setOpen] = useState(false);
+  const [activeFeature, setActiveFeature] = useState<ActiveFeature | null>(null);
+
  const [goalsByYear, setGoalsByYear] = useState<Record<string, any[]>>({});
   const currentYear = new Date().getFullYear().toString();
 
@@ -83,6 +95,29 @@ export default function DailyPage() {
       <BookmarkBlock />
 
       {/* Notebook */}
+
+     <div>
+  <FeatureCard
+  title="Create & Track Habits"
+  imageUrl="/habittrackerexample.png"
+  onOpen={(data) =>
+    setActiveFeature({
+      title: data.title,
+      description:
+        "Track your habits across the week using a simple, paper-like grid that encourages consistency without pressure.",
+      imageUrl: data.imageUrl,
+      points: [
+        "View habits laid out Monday to Sunday",
+        "Mark each day with a simple check or cross",
+        "See patterns and gaps at a glance",
+        "No streaks, scores, or guilt — just awareness",
+      ],
+    })
+  }
+/>
+
+</div>
+
       <div
         className="
           flex flex-col md:flex-row
@@ -117,6 +152,25 @@ export default function DailyPage() {
           />
 
           <div className="my-4 border-t border-black/20" />
+<FeatureCard
+  title="Simple To-Do List"
+  imageUrl="/todoexample.png"
+  onOpen={(data) =>
+    setActiveFeature({
+      title: data.title,
+      description:
+        "Keep a short, focused list of tasks you want to complete today.",
+      imageUrl: data.imageUrl,
+      points: [
+        "Add tasks in seconds with no setup",
+        "Mark tasks complete with a single click",
+        "Completed tasks stay visible but crossed out",
+        "Lock important tasks so they don’t disappear",
+        "Delete tasks when they’re no longer relevant",
+      ],
+    })
+  }
+/>
 
           <TodoBox />
         </section>
@@ -126,9 +180,30 @@ export default function DailyPage() {
           <h2 className="font-handwriting text-[18px] mb-3">
             Reflect
           </h2>
+<FeatureCard
+  title="Reflect on Memorable Moments"
+  imageUrl="/momentsexample.png"
+  onOpen={(data) =>
+    setActiveFeature({
+      title: data.title,
+      description:
+        "Capture small wins and meaningful moments so your days don’t blur together.",
+      imageUrl: data.imageUrl,
+      points: [
+        "Write one memorable moment per day",
+        "Organized automatically by month",
+        "Focus on wins, not productivity metrics",
+        "Scroll back to see what mattered over time",
+      ],
+    })
+  }
+/>
 
           <MomentsSection />
             <div className="space-y-4">
+  <div className="flex flex-col gap-2 mb-3 shrink-0">
+
+              <h1 className="text-[22px] font-handwriting">{currentYear} Goals</h1>
              {Object.entries(goalsByYear).map(([year, goals]) => (
                <YearBlock
                  key={year}
@@ -138,6 +213,18 @@ export default function DailyPage() {
                />
              ))}
            </div>
+           </div>
+{activeFeature && (
+  <FeatureDetailPane
+    title={activeFeature.title}
+    description={activeFeature.description}
+    imageUrl={activeFeature.imageUrl}
+    points={activeFeature.points}
+    onClose={() => setActiveFeature(null)}
+  />
+)}
+
+
 
           
         </section>

@@ -23,6 +23,16 @@ export async function fetchTodos(): Promise<ToDo[]> {
   return data;
 }
 
+/* ================= READ ALL ================= */
+export async function fetchAllTodos(): Promise<ToDo[]> {
+  const res = await fetch("/api/todos?all=true");
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to fetch all todos");
+
+  return data;
+}
+
 /* ================= UPDATE ================= */
 export async function updateTodo(
   id: string,

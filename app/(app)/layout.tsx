@@ -1,3 +1,5 @@
+import ThemeToggle from "../components/UserInterface/DarkModeToggle";
+import ThemeInit from "../components/UserInterface/Themeinit";
 
 
 export default function AppLayout({
@@ -5,11 +7,13 @@ export default function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+  <ThemeInit/>
   return (
     <div
       className="
         min-h-screen
-        bg-[#fff]
+         bg-[#fff] dark:bg-[#000]
         text-neutral-800
         font-handwriting
         text-[12px]
@@ -39,6 +43,8 @@ export default function AppLayout({
             />
           ))}
         </div>
+
+
 
         {children}
       </main>

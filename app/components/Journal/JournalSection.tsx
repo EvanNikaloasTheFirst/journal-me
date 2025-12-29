@@ -5,6 +5,7 @@ import JournalList from "./JournalList";
 import JournalViewer from "./JournalViewer";
 import { createJournal } from "@/lib/journals/journal";
 import { Journal } from "../Models/Journal";
+import { fetchJournals, deleteJournal } from "@/lib/journals/journal";
 
 
 
@@ -13,6 +14,18 @@ export default function JournalSection() {
   const [entries, setEntries] = useState<Journal[]>([]);
 const [openEntry, setOpenEntry] = useState<Journal | null>(null);
 
+useEffect(() => {
+  async function load() {
+    try {
+      const data = await fetchJournals();
+      setEntries(data);
+    } catch (err) {
+      console.error("Failed to load journals", err);
+    }
+  }
+
+  load();
+}, []);
 
 
 function handleOpen(entry: Journal) {
@@ -21,18 +34,6 @@ function handleOpen(entry: Journal) {
   );
 }
 
-  // Load from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("journals");
-    if (stored) {
-      setEntries(JSON.parse(stored));
-    }
-  }, []);
-
-  // Persist
-  useEffect(() => {
-    localStorage.setItem("journals", JSON.stringify(entries));
-  }, [entries]);
 
 async function saveEntry(title: string, text: string) {
   // optimistic entry
@@ -50,12 +51,20 @@ async function saveEntry(title: string, text: string) {
 }
 
 
-  function deleteEntry(id: string) {
-    setEntries((prev) => prev.filter((e) => e._id !== id));
+  async function deleteEntry(id: string) {
+  // Optimistic UI update
+  setEntries((prev) => prev.filter((e) => e._id !== id));
+
+  try {
+    await deleteJournal(id);
+  } catch (error) {
+    console.error("Failed to delete journal entry:", error);
+    // Optional: rollback or show toast
   }
+}
 
   return (
-    <div className="border border-black/40 rounded-md p-4 border border-black/30
+    <div className=" rounded-md p-4 border border-black/30
           rounded-md
           shadow-[3px_4px_0px_rgba(0,0,0,0.15)]">
 

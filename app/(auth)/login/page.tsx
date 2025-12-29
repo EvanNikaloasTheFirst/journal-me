@@ -1,17 +1,24 @@
 "use client";
 
 import GoogleSignInButton from "@/app/components/Buttons/GoogleSignIn";
-
+import { useState, useEffect } from "react";
 export default function LoginPage() {
+
+  
+
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      {/* Stack */}
+<div className="min-h-screen flex items-center justify-center bg-white dark:bg-black transition-colors">
       <div className="flex flex-col items-center gap-4">
 
-        {/* App title ABOVE notebook */}
-        <h1 className="font-handwriting text-[32px] tracking-[0.25em] text-neutral-900 text-center">
-          Life's Operating System
-        </h1>
+        <div>
+          <h1 className="font-handwriting text-[32px] tracking-[0.25em] text-black dark:text-white text-center">
+            Life's Operating System
+          </h1>
+
+          <p className="text-black dark:text-white text-center">
+            Designed to help you track every bit of progress in your life.
+          </p>
+        </div>
 
         {/* Notebook wrapper */}
         <div className="relative perspective-[1200px]">
@@ -66,6 +73,10 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
+
+      </div>
+
+      <div>
 
       </div>
     </div>
