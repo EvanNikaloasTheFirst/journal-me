@@ -1,20 +1,21 @@
 import { Goal } from "../../Models/Goal";
+import { Habit } from "../../Models/Habit";
 export function GoalRow({
-  goal,
+  habit,
   activeGoalId,
   onSelect,
   onToggleArchive,
   onUpdate,
   onDelete,
 }: {
-  goal: Goal;
+  habit: Habit;
   activeGoalId: string | null;
   onSelect: (id: string) => void;
   onToggleArchive: (id: string) => void;
-  onUpdate: (goal: Goal) => void;
+  onUpdate: (goal: Habit) => void;
   onDelete: (id: string) => void;
 }) {
-  const isActive = activeGoalId === goal._id;
+  const isActive = activeGoalId === habit._id;
 
   return (
     <div
@@ -27,12 +28,13 @@ export function GoalRow({
       `}
     >
       <input
-        value={goal.goal}
-        onFocus={() => onSelect(goal._id)}
+        value={habit.name}
+        onFocus={() => onSelect(habit._id)}
         onChange={(e) =>
           onUpdate({
-            ...goal,
-            goal: e.target.value,
+            ...habit,
+            name: e.target.value,
+
           })
         }
         className="
@@ -46,14 +48,14 @@ export function GoalRow({
 
       <div className="flex gap-3 text-[10px]">
         <button
-          onClick={() => onToggleArchive(goal._id)}
+          onClick={() => onToggleArchive(habit._id)}
           className="underline"
         >
-          {goal.completed ? "unarchive" : "archive"}
+          {habit.archived ? "unarchive" : "archive"}
         </button>
 
         <button
-          onClick={() => onDelete(goal._id)}
+          onClick={() => onDelete(habit._id)}
           className="underline text-red-600"
         >
           delete

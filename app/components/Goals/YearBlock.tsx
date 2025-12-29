@@ -5,11 +5,13 @@ import { Goal } from "../Models/Goal";
 import { updateYearlyGoal } from "@/lib/yearly-goals/yearly-goal";
 import { deleteYearlyGoal } from "@/lib/yearly-goals/yearly-goal";
 
+import { YearlyGoal } from "../Models/YearlyGoals";
+
 type Props = {
   year: string;
-  goals: Goal[];
+  goals: YearlyGoal[];
   setGoalsByYear: React.Dispatch<
-    React.SetStateAction<Record<string, Goal[]>>
+    React.SetStateAction<Record<string, YearlyGoal[]>>
   >;
 };
 
@@ -33,6 +35,7 @@ export default function YearBlock({
 
 
   async function toggleGoal(id: string) {
+    if (id == undefined || id.trim() == null) return;
   const goal = goals.find(g => g._id === id);
   if (!goal) return;
 
@@ -73,12 +76,15 @@ export default function YearBlock({
     ${goal.completed ? "bg-lime-200/40" : ""}
   `}
 >
-  <input
-    type="checkbox"
-    checked={goal.completed}
-    onChange={() => toggleGoal(goal._id)}
-    className="mt-[2px]"
-  />
+<input
+  type="checkbox"
+  checked={goal.completed}
+  onChange={() => {
+    if (!goal._id) return;
+    toggleGoal(goal._id);
+  }}
+/>
+
 
   <span
     className={`
@@ -87,12 +93,16 @@ export default function YearBlock({
       ${goal.completed ? "line-through opacity-60" : ""}
     `}
   >
-    {goal.goal}
+    {goal?.goal}
   </span>
 
   {/* DELETE BUTTON */}
   <button
-    onClick={() => deleteGoal(goal._id)}
+    onClick={() => {
+     if (!goal._id) return;
+      deleteGoal(goal._id)}
+    }
+     
     className="
       text-[10px]
       opacity-40

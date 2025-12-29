@@ -1,11 +1,12 @@
 import { Goal } from "../../Models/Goal";
+import { Habit } from "../../Models/Habit";
 import { GoalRow } from "./GoalRow";
 type Props = {
-  actions: Goal[];
+  actions: Habit[];
   activeGoalId: string | null;
   onSelect: (id: string) => void;
   onToggleArchive: (id: string) => void;
-  onUpdate: (goal: Goal) => void;
+  onUpdate: (habit: Habit) => void;
   onDelete: (id: string) => void;
 };
 
@@ -17,8 +18,8 @@ export default function GoalList({
   onUpdate,
   onDelete,
 }: Props) {
-  const active = actions.filter((g) => !g.completed);
-  const archived = actions.filter((g) => g.completed);
+  const active = actions.filter((g) => !g.archived);
+  const archived = actions.filter((g) => g.archived);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -29,17 +30,21 @@ export default function GoalList({
         </h3>
 
         <div className="space-y-2">
-          {active.map((goal) => (
-            <GoalRow
-              key={goal._id}
-              goal={goal}
-              activeGoalId={activeGoalId}
-              onSelect={onSelect}
-              onToggleArchive={onToggleArchive}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-            />
-          ))}
+          {active.map((goal) =>
+  goal._id ? (
+    <GoalRow
+      key={goal._id.toString()}
+      // goal={goal}
+      habit={goal}
+      activeGoalId={activeGoalId}
+      onSelect={onSelect}
+      onToggleArchive={onToggleArchive}
+      onUpdate={onUpdate}
+      onDelete={onDelete}
+    />
+  ) : null
+)}
+
 
           {active.length === 0 && (
             <p className="text-[11px] opacity-60">No active habits</p>
@@ -55,16 +60,19 @@ export default function GoalList({
 
         <div className="space-y-2 opacity-70">
           {archived.map((goal) => (
-            <GoalRow
-              key={goal._id}
-              goal={goal}
-              activeGoalId={activeGoalId}
-              onSelect={onSelect}
-              onToggleArchive={onToggleArchive}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-            />
-          ))}
+          goal._id ? (
+    <GoalRow
+      key={goal._id.toString()}
+      habit={goal}
+      activeGoalId={activeGoalId}
+      onSelect={onSelect}
+      onToggleArchive={onToggleArchive}
+      onUpdate={onUpdate}
+      onDelete={onDelete}
+    />
+    
+  ) : null
+))}
 
           {archived.length === 0 && (
             <p className="text-[11px] opacity-60">No archived habits</p>

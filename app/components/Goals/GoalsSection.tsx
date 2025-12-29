@@ -3,16 +3,26 @@
 import { useEffect, useState } from "react";
 import YearBlock from "./YearBlock";
 import AddGoalModal from "./AddGoalModal";
+
 import {
   createYearlyGoal,
   fetchYearlyGoals,
 } from "@/lib/yearly-goals/yearly-goal";
+import { YearlyGoal } from "../Models/YearlyGoals";
+
+type GoalsForYear = {
+  year: string;
+  goals: YearlyGoal[];
+  completed: boolean;
+};
 
 export default function GoalsSection() {
   const currentYear = new Date().getFullYear().toString();
 
-  const [goalsByYear, setGoalsByYear] = useState<Record<string, any[]>>({});
-  const [open, setOpen] = useState(false);
+const [goalsByYear, setGoalsByYear] = useState<Record<string, YearlyGoal[]>>({});
+
+const [open, setOpen] = useState(false);
+
 
   // ✅ FETCH ON LOAD
   useEffect(() => {
@@ -31,6 +41,16 @@ export default function GoalsSection() {
     loadGoals();
   }, [currentYear]);
 
+const yearlyGoals: GoalsForYear[] = Object.entries(goalsByYear).map(
+  ([year, goals]) => ({
+    year,
+    goals,
+    completed: goals.length > 0 && goals.every(g => g.completed),
+  })
+);
+
+
+
   async function addGoal(text: string) {
     try {
       const goal = await createYearlyGoal(text, currentYear);
@@ -44,7 +64,7 @@ export default function GoalsSection() {
       }));
     } catch (err) {
       console.error(err);
-      alert("Failed to add goal");
+      // alert("Failed to add goal");
     }
   }
 
@@ -65,14 +85,16 @@ export default function GoalsSection() {
         </div>
 
         <div className="space-y-4">
-          {Object.entries(goalsByYear).map(([year, goals]) => (
-            <YearBlock
-              key={year}
-              year={year}
-              goals={goals}
-              setGoalsByYear={setGoalsByYear}
-            />
-          ))}
+{yearlyGoals.map((yg) => (
+  <YearBlock
+    key={yg.year}
+    year={yg.year}
+    goals={yg.goals}
+    setGoalsByYear={setGoalsByYear}
+  />
+))}
+
+
         </div>
 
         {open && (

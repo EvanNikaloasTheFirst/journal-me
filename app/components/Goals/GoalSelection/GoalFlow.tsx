@@ -9,30 +9,38 @@ import {
   updateHabit,
   deleteHabit,
 } from "@/lib/habits/habit";
+import { Habit } from "../../Models/Habit";
+import { useSession } from "next-auth/react";
 
 export default function GoalFlow() {
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [habits, setHabits] = useState<Habit[]>([]);
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
   const [draftGoal, setDraftGoal] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
 
   /* ================= LOAD ================= */
-  useEffect(() => {
-    async function loadHabits() {
-      const res = await fetch("/api/habits");
-      const data = await res.json();
+useEffect(() => {
+  async function loadHabits() {
+    const res = await fetch("/api/habits");
+    const data: Habit[] = await res.json();
 
-      const mapped = data.map((h: any) => ({
-        id: h._id || h.id,
-        title: h.name,
-        archived: h.archived ?? false,
-      }));
+    const mapped = data.map((h) => ({
+      _id: h._id,
+      title: h.name,
+      archived: h.archived ?? false,
+      createdAt:h.createdAt,
+      name:h.name,
+      userId: h.userId
+    }));
 
-      setGoals(mapped);
-    }
+    setHabits(mapped)
 
-    loadHabits();
-  }, []);
+  }
+
+  loadHabits();
+}, []);
+
 
   /* ================= CREATE ================= */
 async function submit() {
@@ -42,7 +50,7 @@ async function submit() {
     setLoading(true);
 
     // ✅ count ONLY active (unarchived) goals
-    const activeGoalsCount = goals.filter((g:any)=> !g.archived).length;
+    const activeGoalsCount = habits.filter((g:any)=> !g.archived).length;
 
 
 
@@ -51,13 +59,16 @@ async function submit() {
 
     const habit = await createHabit(draftGoal, archiveValue);
 
-    const newGoal: Goal = {
+    const newGoal: Habit = {
       _id: habit.id,
-      goal: habit.name,
-      completed: archiveValue,
+      userId:session?.user?.email || "",
+      name: habit.name,
+      archived: archiveValue,
+      createdAt:new Date()
     };
+   
 
-    setGoals(prev => [newGoal, ...prev]);
+    setHabits(prev => [newGoal, ...prev]);
     setActiveGoalId(newGoal._id);
     setDraftGoal(null);
   } finally {
@@ -68,29 +79,29 @@ async function submit() {
 
 
   /* ================= UPDATE ================= */
-async function save(goal: Goal) {
-  const updated = await updateHabit(goal._id,goal.goal, goal.completed,
+async function save(habit: Habit) {
+  const updated = await updateHabit(habit._id,habit.name, habit.archived,
   );
 
-  setGoals((prev) =>
-    prev.map((g) => (g._id === goal._id ? goal : g))
+  setHabits((prev) =>
+    prev.map((g) => (g._id === habit._id ? habit : g))
   );
 }
 
   /* ================= DELETE ================= */
   async function remove(id: string) {
     await deleteHabit(id);
-    setGoals((prev) => prev.filter((g) => g._id !== id));
+    setHabits((prev) => prev.filter((g) => g._id !== id));
   }
 
   /* ================= TOGGLE ================= */
 async function toggleArchive(id: string) {
-  const goal = goals.find((g) => g._id === id);
-  if (!goal) return;
+  const habit = habits.find((g) => g._id === id);
+  if (!habit) return;
 
   // 🚫 prevent unarchive if already 8 active goals
-  if (goal.completed) {
-    const activeCount = goals.filter((g) => !g.completed).length;
+  if (habit.archived) {
+    const activeCount = habits.filter((g) => !g.archived).length;
 
     if (activeCount >= 8) {
       alert("You can only have 8 active goals");
@@ -98,9 +109,9 @@ async function toggleArchive(id: string) {
     }
   }
 
-  const updated: Goal = {
-    ...goal,
-    completed: !goal.completed,
+  const updated: Habit = {
+    ...habit,
+    archived: !habit.archived,
   };
 
   await save(updated);
@@ -129,7 +140,7 @@ async function toggleArchive(id: string) {
       )}
 
       <GoalList
-        actions={goals}
+        actions={habits}
         activeGoalId={activeGoalId}
         onSelect={setActiveGoalId}
         onToggleArchive={toggleArchive}
