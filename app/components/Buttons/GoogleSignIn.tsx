@@ -4,25 +4,37 @@ import { signIn } from "next-auth/react";
 
 export default function GoogleSignInButton() {
   return (
-    <button
-      onClick={() =>
-        signIn("google", {
-          callbackUrl: "/dashboard",
-        })
-      }
-      className="
-        w-full
-        font-handwriting
-        text-[13px]
-        border border-black/40
-        rounded-sm
-        px-3 py-2
-        bg-transparent
-        hover:bg-green-200/40
-        transition
-      "
-    >
-      Sign in with Google
+<button
+  type="button" // avoids accidental form submit
+  onClick={() =>
+    signIn("google", {
+      callbackUrl: "/dashboard",
+    })
+  }
+  className="
+    w-full
+    flex
+    items-center
+    justify-center
+    gap-2
+    font-handwriting
+    text-[13px]
+    border border-white/40
+    rounded-sm
+    px-3 py-2
+    bg-white/90
+    hover:bg-green-200/40
+    transition
+    text-black
+  "
+>
+
+      <span >Sign in with</span>
+      <img
+        src="/google.png"
+        alt="Sign in with Google"
+        className="w-[70px]"
+      />
     </button>
   );
 }

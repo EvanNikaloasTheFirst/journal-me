@@ -35,7 +35,7 @@ export default function BookmarkBlock() {
                 shadow-sm
               "
             >
-              {session.user?.email?.split("@")[0]}
+              {"Log Out"}
             </button>
           </div>
         )}
