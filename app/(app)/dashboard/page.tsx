@@ -13,12 +13,14 @@ import { getCurrentWeekDates } from "@/lib/HabitCompletion/getCurrentWeekDates";
 import { buildCompletionMap } from "@/lib/HabitCompletion/buildCompletionMap";
 import DailyPage from "@/app/components/DailyPage/DailyPage";
 import { fetchYearlyGoals } from "@/lib/yearly-goals/yearly-goal";
+import { getCurrentWeekStart } from "@/lib/dates/date";
 
 
 export default function Home() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completionMap, setCompletionMap] = useState<CompletionMap>({});
  
+const { data: session } = useSession();
 
   const { status } = useSession();
   const dates = getCurrentWeekDates();
@@ -38,7 +40,9 @@ export default function Home() {
         return;
       }
 
-      const completions = await fetchHabitCompletions(habitIds, dates);
+
+
+      const completions = await fetchHabitCompletions(habitIds, session?.user?.email!);
       setCompletionMap(buildCompletionMap(completions));
     }
 
@@ -55,7 +59,8 @@ async function onToggle(habitId: string, date: string) {
   const updated = await toggleHabitCompletion(
     habitId,
     date,
-    !current
+    !current,
+      session?.user?.email!
   );
 
   setCompletionMap((prev: any) => ({

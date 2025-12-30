@@ -28,39 +28,15 @@ export function FeatureCard({ title, imageUrl, points, onOpen }: FeatureCardProp
         cursor-pointer
         hover:scale-110
         transition
+        bg-black
+        text-white
       "
     >
       {/* Dot */}
-      <span className="text-[10px] leading-none">?</span>
+      <span className="text-[10px] leading-none">Help</span>
 
       {/* Hover label */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          top-1/2
-          left-full
-          ml-2
-          -translate-y-1/2
-          whitespace-nowrap
-          rounded-sm
-          border border-black/30
-          bg-[#fffdf9]
-          px-2
-          py-1
-          text-[10px]
-          font-handwriting
-          opacity-0
-          translate-x-1
-          group-hover:opacity-100
-          group-hover:translate-x-0
-          transition
-          shadow-[2px_3px_0px_rgba(0,0,0,0.15)]
-        "
-      >
-        {title}
-        
-      </div>
+     
     </div>
   );
 }

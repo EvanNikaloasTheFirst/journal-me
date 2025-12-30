@@ -89,10 +89,17 @@ async function save(habit: Habit) {
 }
 
   /* ================= DELETE ================= */
-  async function remove(id: string) {
-    await deleteHabit(id);
-    setHabits((prev) => prev.filter((g) => g._id !== id));
-  }
+async function remove(id: string) {
+  const confirmed = window.confirm(
+    "⚠️ This will permanently delete this habit and ALL of its history.\n\nThis action cannot be undone.\n\nDo you want to continue?"
+  );
+
+  if (!confirmed) return;
+
+  await deleteHabit(id);
+
+  setHabits((prev) => prev.filter((g) => g._id !== id));
+}
 
   /* ================= TOGGLE ================= */
 async function toggleArchive(id: string) {

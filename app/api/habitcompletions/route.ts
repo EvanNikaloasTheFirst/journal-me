@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb";
 import { getCollection } from "@/lib/db";
-
+import { getWeekRange } from "@/lib/dates/date";
 /* ================= POST (FETCH COMPLETIONS) ================= */
 export async function POST(req: Request) {
   try {
-    const { habitIds, dates } = await req.json();
+    const { habitIds, dates, userEmail } = await req.json();
 
-    if (!habitIds?.length || !dates?.length) {
+    if (!habitIds?.length || !dates?.length || !userEmail) {
       return Response.json([]);
     }
 
@@ -14,7 +14,12 @@ export async function POST(req: Request) {
 
     const docs = await completions
       .find({
-        habitId: { $in: habitIds.map((id: string) => new ObjectId(id)) },
+        userEmail,
+        habitId: {
+          $in: habitIds
+            .filter(ObjectId.isValid)
+            .map((id: string) => new ObjectId(id)),
+        },
         date: { $in: dates },
       })
       .toArray();
@@ -32,9 +37,9 @@ export async function POST(req: Request) {
 /* ================= PATCH (TOGGLE COMPLETION) ================= */
 export async function PATCH(req: Request) {
   try {
-    const { habitId, date, completed } = await req.json();
+    const { habitId, date, completed, userEmail } = await req.json();
 
-    if (!habitId || !date || typeof completed !== "boolean") {
+    if (!habitId || !date || typeof completed !== "boolean" || !userEmail) {
       return Response.json(
         { error: "Missing fields" },
         { status: 400 }
@@ -45,8 +50,9 @@ export async function PATCH(req: Request) {
 
     await completions.updateOne(
       {
+        userEmail,                      // ✅ match by email
         habitId: new ObjectId(habitId),
-        date,
+        date,                           // ✅ match current date
       },
       {
         $set: {
@@ -54,6 +60,7 @@ export async function PATCH(req: Request) {
           updatedAt: new Date(),
         },
         $setOnInsert: {
+          userEmail,                    // ✅ store email
           habitId: new ObjectId(habitId),
           date,
           createdAt: new Date(),
@@ -62,11 +69,7 @@ export async function PATCH(req: Request) {
       { upsert: true }
     );
 
-    return Response.json({
-      habitId,
-      date,
-      completed,
-    });
+    return Response.json({ habitId, date, completed });
   } catch (err) {
     console.error("PATCH habitcompletions error:", err);
     return Response.json(
@@ -75,3 +78,46 @@ export async function PATCH(req: Request) {
     );
   }
 }
+
+
+
+
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+
+    const date = searchParams.get("date");
+    const weekStart = searchParams.get("weekStart"); // 👈 NEW
+    const habitIdsParam = searchParams.get("habitIds");
+    const userEmail = searchParams.get("userEmail");
+
+    if (!date || !habitIdsParam || !userEmail) {
+      return Response.json([]);
+    }
+
+    const habitIds = habitIdsParam
+      .split(",")
+      .filter(ObjectId.isValid)
+      .map((id) => new ObjectId(id));
+
+    if (!habitIds.length) return Response.json([]);
+
+    const { start, end } = getWeekRange(date, weekStart ?? undefined);
+
+    const completions = await getCollection("habit_completions");
+
+    const docs = await completions.find({
+      userEmail,
+      habitId: { $in: habitIds },
+      date: { $gte: start, $lte: end },
+    }).toArray();
+
+    return Response.json(docs);
+  } catch (err) {
+    console.error("GET habitcompletions error:", err);
+    return Response.json([]);
+  }
+}
+
+// Delete

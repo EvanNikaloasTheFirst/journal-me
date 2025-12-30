@@ -22,31 +22,52 @@ export default function HabitPage() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completionMap, setCompletionMap] = useState<CompletionMap>({});
   const [activeFeature, setActiveFeature] = useState<ActiveFeature | null>(null);
+const [weekAnchor, setWeekAnchor] = useState<Date>(new Date());
 
-  const { status } = useSession();
-  const dates = getCurrentWeekDates();
+const { status, data: session } = useSession();
+
+function getCurrentWeekDates(anchor: Date) {
+  const d = new Date(anchor);
+  const day = d.getDay(); // 0=Sun
+
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diffToMonday);
+
+  return Array.from({ length: 7 }).map((_, i) => {
+    const date = new Date(d);
+    date.setDate(d.getDate() + i);
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+
+const dates = getCurrentWeekDates(weekAnchor);
   
-  useEffect(() => {
-    if (status !== "authenticated") return;
+useEffect(() => {
+  if (status !== "authenticated") return;
 
-    async function loadData() {
-      const habits = await fetchHabits();
-      setHabits(habits);
+  async function loadData() {
+    const habits = await fetchHabits();
+    setHabits(habits);
 
-      const dates = getCurrentWeekDates();
-      const habitIds = habits.map((h:any) => h._id);
+    const habitIds = habits.map((h: any) => h._id);
 
-      if (habitIds.length === 0) {
-        setCompletionMap({});
-        return;
-      }
-
-      const completions = await fetchHabitCompletions(habitIds, dates);
-      setCompletionMap(buildCompletionMap(completions));
+    if (habitIds.length === 0) {
+      setCompletionMap({});
+      return;
     }
 
-    loadData();
-  }, [status]);
+    const completions = await fetchHabitCompletions(
+      habitIds,
+      session?.user?.email!,
+      weekAnchor.toISOString().slice(0, 10) // 👈 anchor date
+    );
+
+    setCompletionMap(buildCompletionMap(completions));
+  }
+
+  loadData();
+}, [status, weekAnchor]);
 
 
 async function onToggle(habitId: string, date: string) {
@@ -55,7 +76,8 @@ async function onToggle(habitId: string, date: string) {
   const updated = await toggleHabitCompletion(
     habitId,
     date,
-    !current
+    !current,
+     session?.user?.email!
   );
 
   setCompletionMap((prev: any) => ({
@@ -84,6 +106,39 @@ async function onToggle(habitId: string, date: string) {
         <h2 className="font-handwriting text-[18px] mb-4 border-b border-black/20 pb-1">
           Habit Tracker (This Week)
         </h2>
+
+        <div className="flex items-center justify-between mb-4">
+  <button
+    onClick={() =>
+      setWeekAnchor((prev) => {
+        const d = new Date(prev);
+        d.setDate(d.getDate() - 7);
+        return d;
+      })
+    }
+    className="text-sm underline"
+  >
+    ← Previous
+  </button>
+
+  <span className="text-sm text-black/60">
+    Week of {dates[0]}
+  </span>
+
+  <button
+    onClick={() =>
+      setWeekAnchor((prev) => {
+        const d = new Date(prev);
+        d.setDate(d.getDate() + 7);
+        return d;
+      })
+    }
+    className="text-sm underline"
+  >
+    Next →
+  </button>
+</div>
+
 
          <HabitTracker
                   habits={habits}

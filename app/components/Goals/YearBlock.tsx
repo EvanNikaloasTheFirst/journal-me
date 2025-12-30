@@ -23,7 +23,13 @@ export default function YearBlock({
   const completedCount = goals.filter(g => g.completed).length;
 
 
-  async function deleteGoal(id: string) {
+async function deleteGoal(id: string) {
+  const confirmed = window.confirm(
+    "⚠️ This will permanently delete this goal and ALL associated history.\n\nThis action cannot be undone.\n\nDo you want to continue?"
+  );
+
+  if (!confirmed) return;
+
   // optimistic update
   setGoalsByYear(prev => ({
     ...prev,

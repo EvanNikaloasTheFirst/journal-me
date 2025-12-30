@@ -1,31 +1,44 @@
 import { HabitCompletion } from "@/app/components/Models/HabitCompletion";
 import { HabitCompletionUpdateResponse } from "@/app/components/Models/HabitCompletionUpdateResponse";
+
+
 export async function fetchHabitCompletions(
   habitIds: string[],
-  dates: string[]
-): Promise<HabitCompletion[]> {
-  const res = await fetch("/api/habitcompletions", {
-    method: "POST", // POST because arrays
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ habitIds, dates }),
+  userEmail: string,
+  customDate?: string
+) {
+  if (!habitIds.length || !userEmail) return [];
+
+  // ✅ single source of truth
+  const date = customDate ?? getLocalDateString(); // YYYY-MM-DD (local)
+
+  const params = new URLSearchParams({
+    habitIds: habitIds.join(","),
+    date,          // ✅ matches GET handler
+    userEmail,
   });
 
-  const data = await res.json();
+  const res = await fetch(`/api/habitcompletions?${params}`);
 
-  console.log("📨 API RESPONSE (fetchHabitCompletions):", data);
+  if (!res.ok) return [];
 
-  if (!res.ok) {
-    throw new Error(data.error || "Failed to fetch habit completions");
-  }
+  return res.json();
+}
 
-  return data;
+
+
+function getLocalDateString() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().split("T")[0];
 }
 
 
 export async function toggleHabitCompletion(
   habitId: string,
   date: string,
-  completed: boolean
+  completed: boolean,
+  userEmail: string
 ): Promise<HabitCompletionUpdateResponse> {
   const res = await fetch("/api/habitcompletions", {
     method: "PATCH",
@@ -34,16 +47,16 @@ export async function toggleHabitCompletion(
       habitId,
       date,
       completed,
+      userEmail,
     }),
   });
 
   const data = await res.json();
-
-  console.log("✅ TOGGLE COMPLETION RESPONSE:", data);
-
+console.log(data)
   if (!res.ok) {
     throw new Error(data.error || "Failed to toggle habit completion");
   }
 
-  return data as HabitCompletionUpdateResponse;
+  return data;
 }
+

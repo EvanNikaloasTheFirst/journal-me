@@ -36,32 +36,55 @@ function handleOpen(entry: Journal) {
 
 
 async function saveEntry(title: string, text: string) {
-  // optimistic entry
- 
+  // Create optimistic entry
+  const tempId = crypto.randomUUID();
 
+  const optimisticEntry: Journal = {
+    _id: tempId,
+    title,
+    text,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  // ⬆️ ADD TO LIST immediately
+  setEntries((prev) => [optimisticEntry, ...prev]);
 
   try {
     const saved = await createJournal(title, text);
 
-    
+    // 🔁 Replace optimistic entry with real one from DB
+    setEntries((prev) =>
+      prev.map((e) => (e._id === tempId ? saved : e))
+    );
   } catch (err) {
-    // rollback if DB fails
-    console.log("Err could not save journal sorry.")
+    console.error("Could not save journal entry", err);
+
+    // ❌ Rollback optimistic entry
+    setEntries((prev) => prev.filter((e) => e._id !== tempId));
   }
 }
 
 
-  async function deleteEntry(id: string) {
+async function deleteEntry(id: string) {
+  const confirmed = window.confirm(
+    "⚠️ This will permanently delete this journal entry.\n\nThis action cannot be undone.\n\nDo you want to continue?"
+  );
+
+  if (!confirmed) return;
+  
+
   // Optimistic UI update
   setEntries((prev) => prev.filter((e) => e._id !== id));
 
   try {
     await deleteJournal(id);
+    setOpenEntry(null)
   } catch (error) {
     console.error("Failed to delete journal entry:", error);
-    // Optional: rollback or show toast
   }
 }
+
 
   return (
     <div className=" rounded-md p-4 border border-black/30

@@ -127,30 +127,45 @@ export async function DELETE(req: Request) {
 
   const { id } = await req.json();
 
-  if (!id) {
+  if (!id || !ObjectId.isValid(id)) {
     return NextResponse.json(
-      { error: "Habit id required" },
+      { error: "Valid habit id required" },
       { status: 400 }
     );
   }
 
-  const habits = await getCollection("habits");
+  const habitId = new ObjectId(id);
+  const userEmail = session.user.email;
 
-  const result = await habits.deleteOne({
-    _id: new ObjectId(id),
-    userId: session.user.email, // 🔐 ownership check
+  const habits = await getCollection("habits");
+  const completions = await getCollection("habit_completions");
+
+  /** 1️⃣ Delete habit */
+  const habitResult = await habits.deleteOne({
+    _id: habitId,
+    userId: userEmail,
   });
 
-  if (result.deletedCount === 0) {
+  if (habitResult.deletedCount === 0) {
     return NextResponse.json(
       { error: "Habit not found" },
       { status: 404 }
     );
   }
 
-  console.log("🗑️ HABIT DELETED:", id);
+  /** 2️⃣ Cascade delete completions */
+  const completionsResult = await completions.deleteMany({
+    habitId,
+    userEmail,
+  });
 
-  return NextResponse.json({ success: true });
+  console.log("🗑️ HABIT DELETED:", id);
+  console.log("🗑️ COMPLETIONS DELETED:", completionsResult.deletedCount);
+
+  return NextResponse.json({
+    success: true,
+    deletedCompletions: completionsResult.deletedCount,
+  });
 }
 
 export async function PATCH(req: Request) {

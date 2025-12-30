@@ -33,6 +33,7 @@ export default function DailyPage() {
   const { status } = useSession();
     const [open, setOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState<ActiveFeature | null>(null);
+const { data: session } = useSession();
 
  const [goalsByYear, setGoalsByYear] = useState<Record<string, any[]>>({});
   const currentYear = new Date().getFullYear().toString();
@@ -64,12 +65,16 @@ export default function DailyPage() {
 
       if (!habits.length) return;
 
-      const completions = await fetchHabitCompletions(
-     habits.map((h: any) => h._id),
+     const today = new Date().toISOString().split("T")[0];
 
-        dates
-      );
+const completions = await fetchHabitCompletions(
+  habits.map((h:any) => h._id),
 
+  session?.user?.email!
+);
+
+console.log("jterjkefsrak")
+console.log(completions)
       setCompletionMap(buildCompletionMap(completions));
     }
 
@@ -79,7 +84,7 @@ export default function DailyPage() {
   async function onToggle(habitId: string, date: string) {
     const current = completionMap[habitId]?.[date] ?? false;
 
-    const updated = await toggleHabitCompletion(habitId, date, !current);
+    const updated = await toggleHabitCompletion(habitId, date, !current,  session?.user?.email!);
 
     setCompletionMap(prev => ({
       ...prev,
@@ -177,10 +182,7 @@ export default function DailyPage() {
 
         {/* RIGHT PAGE — REFLECT */}
         <section className="w-full md:w-1/2 p-4">
-          <h2 className="font-handwriting text-[18px] mb-3">
-            Reflect
-          </h2>
-<FeatureCard
+        <FeatureCard
   title="Reflect on Memorable Moments"
   imageUrl="/momentsexample.png"
   onOpen={(data) =>
@@ -198,6 +200,7 @@ export default function DailyPage() {
     })
   }
 />
+        
 
           <MomentsSection />
             <div className="space-y-4">

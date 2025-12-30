@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     userId: session.user.email,
     text,
     year: now.getFullYear(),
-    month: now.getMonth(), // 0–11
+    month: now.getMonth()+1, // 0–11
     day: now.getDate(),
     createdAt: now,
     updatedAt: now,
@@ -48,11 +48,18 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+    const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // JS months are 0-based
   const collection = await getCollection("moments");
-
-  const moments = await collection
-    .find({ userId: session.user.email })
-    .sort({ createdAt: -1 })
+console.log(currentYear, currentMonth)
+const moments = await collection
+    .find({
+      userId: session.user.email,
+      year: currentYear,
+      month: currentMonth,
+    })
+    .sort({ day: 1 }) // optional: chronological within month
     .toArray();
 
   return NextResponse.json(moments);

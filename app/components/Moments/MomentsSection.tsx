@@ -10,8 +10,7 @@ export default function MomentsSection() {
 const [moments, setMoments] = useState<Moment[]>([]);
 const now = new Date();
 const currentYear = now.getFullYear();
-const currentMonth = now.getMonth(); // 0-based (matches DB)
-
+const currentMonth = now.getMonth()+1; // 0-based (matches DB)
 const [open, setOpen] = useState(false);
 
 useEffect(() => {
@@ -36,11 +35,12 @@ useEffect(() => {
 
 const monthLabel =
   moments[0]
-    ? new Date(moments[0].year, moments[0].month).toLocaleString(
+    ? new Date(moments[0].year, moments[0].month-1).toLocaleString(
         "default",
         { month: "long", year: "numeric" }
       )
     : "This Month";
+
 
 
   return (
