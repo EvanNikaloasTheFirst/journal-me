@@ -8,11 +8,11 @@ import ThemeToggle from "./components/UserInterface/DarkModeToggle";
 export const metadata: Metadata = {
   title: "LifeOS",
   description: "A messy, honest notebook for habits, goals, and reflection",
-  icons: {
-    icon: "/icon.png",          // standard favicon
-    shortcut:  "/icon.png",    // legacy support
-    apple: "/icon.png",         // iOS home screen
-  },
+  // icons: {
+  //   icon: "/icon.png",          // standard favicon
+  //   shortcut:  "/icon.png",    // legacy support
+  //   apple: "/icon.png",         // iOS home screen
+  // },
 };
 
 

@@ -89,7 +89,6 @@ export default function PrivacyPage() {
         </h2>
         <ul className="text-[13px] list-disc pl-5 space-y-1 opacity-80">
           <li>Access your data at any time</li>
-          <li>Export your data in a readable format</li>
           <li>Delete your account and all associated data</li>
           <li>Stop using the app at any time</li>
         </ul>
@@ -105,10 +104,7 @@ export default function PrivacyPage() {
           including journals, habits, moments, and goals — is permanently
           removed from our database.
         </p>
-        <p className="text-[12px] opacity-60 mt-2">
-          Encrypted backups may retain deleted data for up to 30 days before
-          being automatically purged.
-        </p>
+
       </section>
 
       {/* CONTACT */}
@@ -120,6 +116,7 @@ export default function PrivacyPage() {
           If you have any questions about your data or privacy, you can contact
           us through the app or via the email associated with your account.
         </p>
+        <p>evangeloscodes@gmail.com</p>
       </section>
     </div>
   );
