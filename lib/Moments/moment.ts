@@ -66,3 +66,17 @@ export async function fetchMomentStats(): Promise<{
 
   return data;
 }
+
+
+
+
+
+export function groupMomentsByYearMonth(moments: Moment[]) {
+  return moments.reduce((acc, moment) => {
+    if (!acc[moment.year]) acc[moment.year] = {};
+    if (!acc[moment.year][moment.month]) acc[moment.year][moment.month] = [];
+
+    acc[moment.year][moment.month].push(moment);
+    return acc;
+  }, {} as Record<number, Record<number, Moment[]>>);
+}

@@ -41,6 +41,7 @@ export default function RootLayout({
               {children}
             </main>
                     <p className=" text-white text-[12px] text-center">Created By: <a href="https://www.instagram.com/ev.codes">@ev.codes</a></p>
+                    <p className=" text-white text-[12px] text-center">How Your Data Is Used: <a href="/termsconditions">Click Here</a></p>
 
           </div>
         </Providers>

@@ -3,13 +3,17 @@
 import { useEffect } from "react";
 import { Journal } from "../Models/Journal";
 
-
 type Props = {
   entry: Journal;
   onClose: () => void;
+  onUpdateDate: (id: string, date: string) => void;
 };
 
-export default function JournalViewer({ entry, onClose }: Props) {
+export default function JournalViewer({
+  entry,
+  onClose,
+  onUpdateDate,
+}: Props) {
   // ESC to close
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -41,10 +45,26 @@ export default function JournalViewer({ entry, onClose }: Props) {
           shadow-[4px_6px_0_rgba(0,0,0,0.25)]
         "
       >
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="font-handwriting text-[16px]">
+        <div className="flex justify-between items-center mb-3 gap-2">
+          <h2 className="font-handwriting text-[16px] flex-1">
             {entry.title}
           </h2>
+
+          {/* DATE EDIT */}
+          <input
+            type="date"
+            value={entry.createdAt.slice(0, 10)}
+            max={new Date().toISOString().slice(0, 10)}
+            onChange={(e) =>
+              onUpdateDate(entry._id, e.target.value)
+            }
+            className="
+              text-xs
+              border border-black/20
+              rounded-sm
+              px-2 py-1
+            "
+          />
 
           <button
             onClick={onClose}

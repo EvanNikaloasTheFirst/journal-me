@@ -46,9 +46,13 @@ export default function Journal() {
           
         "
       >
-        <h2 className="font-handwriting text-[18px] mb-4 border-b border-black/20 pb-1">
-          Journal
-        </h2>
+       <h2 className="font-handwriting text-[18px] mb-4 border-b border-black/20 pb-1">
+  Journal
+</h2>
+
+<p className="text-xs opacity-60 mb-4">
+  Note: Once entries are submitted, the content cannot be edited.
+</p>
 
 
         <JournalSection />

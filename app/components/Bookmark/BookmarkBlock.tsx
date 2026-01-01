@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Bookmark from "./Bookmark";
+import { DeleteAccountButton } from "../Buttons/DeleteAccount";
+import UserMenu from "../UserMenu/user-menu";
 
 export default function BookmarkBlock() {
   const { data: session, status } = useSession();
@@ -17,26 +19,14 @@ export default function BookmarkBlock() {
           <Bookmark label="Habits" path="habits" />
           <Bookmark label="Goals" path="goals" color="bg-pink-300" />
           <Bookmark label="Journal" path="journal" color="bg-yellow-200" />
-          {/* <Bookmark label="ToDos" path="todos" color="bg-orange-200" /> */}
+           <Bookmark label="Memorable Moments" path="memorable-moments" color="bg-green-200" />
+
         </div>
 
         {/* User */}
         {status === "authenticated" && (
           <div className="relative">
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="
-                px-3 py-2
-                bg-blue-200
-                font-handwriting
-                text-[11px]
-                border border-black/40
-                rounded-b-sm
-                shadow-sm
-              "
-            >
-              {"Log Out"}
-            </button>
+           <UserMenu/>
           </div>
         )}
       </div>

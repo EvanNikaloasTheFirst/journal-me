@@ -56,13 +56,14 @@ export async function GET() {
 }
 
 /* ================= UPDATE ================= */
+/* ================= UPDATE ================= */
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id, title, text } = await req.json();
+  const { id, title, text, createdAt } = await req.json();
 
   if (!id) {
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
@@ -71,11 +72,17 @@ export async function PUT(req: Request) {
   const collection = await getCollection("journals");
 
   await collection.updateOne(
-    { _id: new ObjectId(id), userId: session.user.email },
+    {
+      _id: new ObjectId(id),
+      userId: session.user.email,
+    },
     {
       $set: {
         ...(title !== undefined && { title }),
         ...(text !== undefined && { text }),
+        ...(createdAt !== undefined && {
+          createdAt: new Date(createdAt),
+        }),
         updatedAt: new Date(),
       },
     }
@@ -83,6 +90,7 @@ export async function PUT(req: Request) {
 
   return NextResponse.json({ success: true });
 }
+
 
 /* ================= DELETE ================= */
 export async function DELETE(req: Request) {
@@ -106,3 +114,5 @@ export async function DELETE(req: Request) {
 
   return NextResponse.json({ success: true });
 }
+
+

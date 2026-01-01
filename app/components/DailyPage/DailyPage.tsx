@@ -18,6 +18,7 @@ import { buildCompletionMap } from "@/lib/HabitCompletion/buildCompletionMap";
 import { CompletionMap } from "../Models/CompletionMap";
 import { FeatureCard } from "../Help/FeatureCard";
 import { FeatureDetailPane } from "../Help/FeatureDetailPane";
+import { DeleteAccountButton } from "../Buttons/DeleteAccount";
 
 
 export type ActiveFeature = {
@@ -232,6 +233,7 @@ console.log(completions)
           
         </section>
       </div>
+
     </div>
   );
 }

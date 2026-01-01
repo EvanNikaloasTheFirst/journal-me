@@ -6,8 +6,7 @@ import JournalViewer from "./JournalViewer";
 import { createJournal } from "@/lib/journals/journal";
 import { Journal } from "../Models/Journal";
 import { fetchJournals, deleteJournal } from "@/lib/journals/journal";
-
-
+import { updateJournalDate } from "@/lib/journals/journal";
 
 
 export default function JournalSection() {
@@ -26,6 +25,31 @@ useEffect(() => {
 
   load();
 }, []);
+
+async function updateEntryDate(id: string, date: string) {
+  const iso = new Date(date).toISOString();
+
+  // ✅ optimistic list update
+  setEntries((prev) =>
+    prev.map((e) =>
+      e._id === id ? { ...e, createdAt: iso } : e
+    )
+  );
+
+  // ✅ optimistic open modal update
+  setOpenEntry((prev) =>
+    prev && prev._id === id
+      ? { ...prev, createdAt: iso }
+      : prev
+  );
+
+  try {
+    await updateJournalDate(id, date);
+  } catch (err) {
+    console.error("Failed to update journal date", err);
+  }
+}
+
 
 
 function handleOpen(entry: Journal) {
@@ -103,13 +127,13 @@ async function deleteEntry(id: string) {
         />
 
 
-  {openEntry && (
-    <JournalViewer
-    
-      entry={openEntry}
-      onClose={() => setOpenEntry(null)}
-    />
-  )}
+{openEntry && (
+  <JournalViewer
+    entry={openEntry}
+    onClose={() => setOpenEntry(null)}
+    onUpdateDate={updateEntryDate}
+  />
+)}
 
 
 

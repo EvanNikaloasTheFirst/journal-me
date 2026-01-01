@@ -48,18 +48,16 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-    const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1; // JS months are 0-based
   const collection = await getCollection("moments");
-console.log(currentYear, currentMonth)
-const moments = await collection
-    .find({
-      userId: session.user.email,
-      year: currentYear,
-      month: currentMonth,
+
+  const moments = await collection
+    .find({ userId: session.user.email })
+    .sort({
+      year: -1,
+      month: -1,
+      day: -1,
+      createdAt: -1,
     })
-    .sort({ day: 1 }) // optional: chronological within month
     .toArray();
 
   return NextResponse.json(moments);

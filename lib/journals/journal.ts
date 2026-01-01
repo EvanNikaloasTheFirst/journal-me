@@ -67,3 +67,25 @@ export async function deleteJournal(id: string) {
 
   return data;
 }
+
+
+export async function updateJournalDate(
+  id: string,
+  date: string
+) {
+  const res = await fetch("/api/journals", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id,
+      createdAt: date,
+    }),
+  });
+
+  
+  if (!res.ok) {
+    throw new Error("Failed to update journal date");
+  }
+
+  return res.json();
+}
